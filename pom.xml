@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.cesurformacion.programacion.jdbc</groupId>
-	<artifactId>TiendaElectronicaV2</artifactId>
+	<artifactId>TiendaElectronica</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>TiendaElectronicaV2</name>
-	<description>TiendaElectronicaV2</description>
+	<name>TiendaElectronica</name>
+	<description>TiendaElectronica</description>
 
 
 	<dependencies>

@@ -20,135 +20,17 @@ public class VentaDAOImpl implements VentaDAO {
 
 	@Override
 	public void registrarVenta(Venta venta, List<DetalleVenta> detalles) {
-		String sqlVenta = "INSERT INTO Ventas (fecha_venta) VALUES (?) RETURNING venta_id";
-		String sqlDetalleVenta = "INSERT INTO DetallesVenta (venta_id, producto_id, cantidad_vendida) VALUES (?, ?, ?)";
-
-		try {
-			conn.setAutoCommit(false); // Start transaction
-
-			// Insertar la venta y obtener el ID generado
-			try (PreparedStatement pstmtVenta = conn.prepareStatement(sqlVenta)) {
-				pstmtVenta.setDate(1, java.sql.Date.valueOf(venta.getFecha()));
-				ResultSet rsVenta = pstmtVenta.executeQuery();
-				if (rsVenta.next()) {
-					int ventaId = rsVenta.getInt(1); // Obtener el ID generado para la venta
-					venta.setId(ventaId); // Setear el ID a la venta
-
-					// Insertar cada detalle de la venta
-					try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalleVenta)) {
-						for (DetalleVenta detalle : detalles) {
-							pstmtDetalle.setInt(1, ventaId);
-							pstmtDetalle.setInt(2, detalle.getProductoId());
-							pstmtDetalle.setInt(3, detalle.getCantidad());
-							pstmtDetalle.executeUpdate();
-
-							// Actualizar stock del producto
-							actualizarStockProducto(detalle.getProductoId(), -detalle.getCantidad());
-						}
-					}
-				}
-				conn.commit(); // Commit the transaction
-			}
-		} catch (SQLException e) {
-			try {
-				if (conn != null) {
-					conn.rollback(); // Roll back the transaction in case of error
-				}
-			} catch (SQLException ex) {
-				System.err.println("Error during transaction rollback: " + ex.getMessage());
-			}
-			throw new RuntimeException("Error during sale registration: " + e.getMessage(), e);
-		} finally {
-			try {
-				if (conn != null) {
-					conn.setAutoCommit(true); // Reset auto-commit to true
-				}
-			} catch (SQLException e) {
-				System.err.println("Error resetting auto-commit: " + e.getMessage());
-			}
-		}
-	}
-
-	private void actualizarStockProducto(int productoId, int cantidadCambiada) throws SQLException {
-		String sql = "UPDATE Productos SET cantidad = cantidad + ? WHERE producto_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, cantidadCambiada);
-			pstmt.setInt(2, productoId);
-			pstmt.executeUpdate();
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void registrarVentaConBatch(Venta venta, List<DetalleVenta> detalles) {
-		String sqlVenta = "INSERT INTO Ventas (fecha_venta) VALUES (?) RETURNING venta_id";
-		String sqlDetalleVenta = "INSERT INTO DetallesVenta (venta_id, producto_id, cantidad_vendida) VALUES (?, ?, ?)";
-
-		try {
-			conn.setAutoCommit(false); // Start transaction
-			// Insertar la venta y obtener el ID generado
-			try (PreparedStatement pstmtVenta = conn.prepareStatement(sqlVenta)) {
-				pstmtVenta.setDate(1, java.sql.Date.valueOf(venta.getFecha()));
-				ResultSet rsVenta = pstmtVenta.executeQuery();
-				if (rsVenta.next()) {
-					int ventaId = rsVenta.getInt(1); // Obtener el ID generado para la venta
-					venta.setId(ventaId); // Setear el ID a la venta
-
-					// Insertar cada detalle de la venta utilizando batch
-					try (PreparedStatement pstmtDetalle = conn.prepareStatement(sqlDetalleVenta)) {
-						for (DetalleVenta detalle : detalles) {
-							pstmtDetalle.setInt(1, ventaId);
-							pstmtDetalle.setInt(2, detalle.getProductoId());
-							pstmtDetalle.setInt(3, detalle.getCantidad());
-							pstmtDetalle.addBatch(); // Agregar a batch en lugar de ejecutar inmediatamente
-						}
-						pstmtDetalle.executeBatch(); // Ejecutar todas las inserciones del batch juntas
-
-						// Actualizar stock del producto en un batch
-						try (PreparedStatement pstmtUpdateStock = conn.prepareStatement(
-								"UPDATE Productos SET cantidad = cantidad - ? WHERE producto_id = ?")) {
-							for (DetalleVenta detalle : detalles) {
-								pstmtUpdateStock.setInt(1, detalle.getCantidad());
-								pstmtUpdateStock.setInt(2, detalle.getProductoId());
-								pstmtUpdateStock.addBatch();
-							}
-							pstmtUpdateStock.executeBatch(); // Ejecutar todas las actualizaciones del batch juntas
-						}
-					}
-				}
-				conn.commit(); // Commit the transaction
-			} catch (SQLException e) {
-				try {
-					if (conn != null) {
-						conn.rollback(); // Roll back the transaction in case of error
-					}
-				} catch (SQLException ex) {
-					System.err.println("Error during transaction rollback: " + ex.getMessage());
-				}
-				throw new RuntimeException("Error during sale registration: " + e.getMessage(), e);
-			} finally {
-				try {
-					if (conn != null) {
-						conn.setAutoCommit(true); // Reset auto-commit to true
-					}
-				} catch (SQLException e) {
-					System.err.println("Error resetting auto-commit: " + e.getMessage());
-				}
-
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
-	private PreparedStatement actualizarStockProductoBatch(int productoId, int cantidadCambiada) throws SQLException {
-		String sql = "UPDATE Productos SET cantidad = cantidad + ? WHERE producto_id = ?";
-		try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			pstmt.setInt(1, cantidadCambiada);
-			pstmt.setInt(2, productoId);
-			pstmt.addBatch();
-			return pstmt;
-		}
-	}
+
 
 }
 
